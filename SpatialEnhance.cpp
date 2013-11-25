@@ -72,7 +72,9 @@ IplImage* productOfImage(IplImage *img1, IplImage *img2){
 	cvSetZero(img) ;
 	for(int i=0; i<img->height; i++){
 		for(int j=0; j<img->width; j++){
-			double color = cvGetReal2D(img1, i, j) * cvGetReal2D(img2, i, j) ;
+			//double c1 = cvGetReal2D(img1, i, j) ;
+			//double c2 = cvGetReal2D(img2, i, j) ;
+			double color = ((cvGetReal2D(img1, i, j)/255) * (cvGetReal2D(img2, i, j)/255))*255 ;
 			cvSetReal2D(img, i, j, color) ;
 		}
 	}

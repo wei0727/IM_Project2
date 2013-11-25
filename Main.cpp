@@ -8,26 +8,35 @@
 using namespace std;
 using namespace cv;
 
+void imgEnhanceExampleRoutine(string img){
+	IplImage *inputImg, *laplacianImg, *sobelImg, *finalImg ;
+	inputImg = cvLoadImage(img.c_str(), CV_LOAD_IMAGE_GRAYSCALE) ;
+	laplacianImg = laplacianFilter(inputImg, 1) ;
+	cvSaveImage("b.jpg", laplacianImg) ;
+	finalImg = sumOfImage(inputImg, laplacianImg) ;
+	cvSaveImage("c.jpg", finalImg) ;
+	sobelImg = sobelFilter(inputImg) ;
+	cvSaveImage("d.jpg", sobelImg) ;
+	sobelImg = avgFilter(sobelImg, 5) ;
+	cvSaveImage("e.jpg", sobelImg) ;
+	finalImg = productOfImage(finalImg, sobelImg) ;
+	cvSaveImage("f.jpg", finalImg) ;
+	finalImg = sumOfImage(finalImg, inputImg) ;
+	cvSaveImage("g.jpg", finalImg) ;
+	finalImg = powerLawTransformation(finalImg, 1.15) ;
+	cvSaveImage("h.jpg", finalImg) ;
+}
+
 int main(){
 	IplImage *inputImg, *eImg, *laplacianImg, *sobelImg, *finalImg ;
 	vector<int> h, eh ;
-	inputImg = cvLoadImage("Fig0343(a)(skeleton_orig).tif", CV_LOAD_IMAGE_GRAYSCALE) ;
-	h = computeHistogram(inputImg) ;
-	eImg = histogramEqualization(inputImg, h) ;
-	eh = computeHistogram(eImg) ;
-	laplacianImg = laplacianFilter(inputImg, 1) ;
-	sobelImg = sobelFilter(inputImg) ;
-	sobelImg = avgFilter(sobelImg, 5) ;
-	finalImg = sumOfImage(inputImg, sobelImg) ;
-	finalImg = sumOfImage(inputImg, laplacianImg) ;
-	//finalImg = productOfImage(finalImg, sobelImg) ;
-	//finalImg = histogramEqualization(finalImg, computeHistogram(finalImg)) ;
-	//finalImg = sumOfImage(finalImg, inputImg) ;
-	finalImg = powerLawTransformation(finalImg, 1.2) ;
+	//imgEnhanceExampleRoutine("Fig0343(a)(skeleton_orig).tif") ;
+	inputImg = cvLoadImage("Fig0333(a)(test_pattern_blurring_orig).tif", CV_LOAD_IMAGE_GRAYSCALE) ;
+	finalImg = avgFilter(inputImg, 35) ;
 	cvNamedWindow("inputImage") ;
 	cvShowImage("inputImage", inputImg) ;
-	cvNamedWindow("sobelImg") ;
-	cvShowImage("sobelImg", sobelImg) ;
+	//cvNamedWindow("sobelImg") ;
+	//cvShowImage("sobelImg", sobelImg) ;
 	cvNamedWindow("finalImage") ;
 	cvShowImage("finalImage", finalImg) ;
 	//cvNamedWindow("inputHistogram") ;
