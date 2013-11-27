@@ -172,3 +172,28 @@ IplImage* powerLawTransformation(IplImage *img, double gamma, double c){
 	}
 	return dst ;
 }
+
+IplImage* medianFilter(IplImage *img, int mask_size){
+	if((mask_size%2!=1) || mask_size<3)
+		mask_size = 3 ;
+	int paddingSize = floor(mask_size/2.0) ;
+	Mat matImgExp = Mat::zeros(img->height+paddingSize*2, img->width+paddingSize*2, CV_8UC1) ;
+	Mat(img).copyTo(matImgExp(cvRect(paddingSize, paddingSize, img->width, img->height))) ;
+	IplImage *dst = cvCreateImage(cvSize(img->width, img->height), img->depth, img->nChannels) ;
+	cvSetZero(dst) ;
+	Mat subImg ;
+	for(int i=0; i<img->height; i++){
+		for(int j=0; j<img->width; j++){
+			subImg = matImgExp(cvRect(j, i, mask_size, mask_size)) ;
+			vector<int> tmpArr ;
+			for(int x=0; x<mask_size; x++){
+				for(int y=0; y<mask_size; y++){
+					tmpArr.push_back((int)subImg.at<unsigned char>(x, y)) ;
+				}
+			}
+			sort(tmpArr.begin(), tmpArr.end()) ;
+			cvSetReal2D(dst, i, j, tmpArr[((mask_size*mask_size)-1)/2]) ;
+		}
+	}
+	return dst ;
+}

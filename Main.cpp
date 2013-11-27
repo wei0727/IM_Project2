@@ -8,43 +8,64 @@
 using namespace std;
 using namespace cv;
 
+void imgHistogramRoutine(string img){
+	IplImage *inputImg, *outputImg ;
+	vector<int> inputH, outputH ;
+	inputImg = cvLoadImage(img.c_str(), CV_LOAD_IMAGE_GRAYSCALE) ;
+	inputH = computeHistogram(inputImg) ;
+	outputImg = histogramEqualization(inputImg, inputH) ;
+	outputH = computeHistogram(outputImg) ;
+	cvShowImage("input", inputImg) ;
+	cvShowImage("output", outputImg) ;
+	drawHistogram(inputH, "inputHistogram") ;
+	drawHistogram(outputH, "outputHistogram") ;
+}
+
 void imgEnhanceExampleRoutine(string img){
 	IplImage *inputImg, *laplacianImg, *sobelImg, *finalImg ;
 	inputImg = cvLoadImage(img.c_str(), CV_LOAD_IMAGE_GRAYSCALE) ;
 	laplacianImg = laplacianFilter(inputImg, 1) ;
-	cvSaveImage("b.jpg", laplacianImg) ;
+	cvSaveImage("example_b.jpg", laplacianImg) ;
 	finalImg = sumOfImage(inputImg, laplacianImg) ;
-	cvSaveImage("c.jpg", finalImg) ;
+	cvSaveImage("example_c.jpg", finalImg) ;
 	sobelImg = sobelFilter(inputImg) ;
-	cvSaveImage("d.jpg", sobelImg) ;
+	cvSaveImage("example_d.jpg", sobelImg) ;
 	sobelImg = avgFilter(sobelImg, 5) ;
-	cvSaveImage("e.jpg", sobelImg) ;
+	cvSaveImage("example_e.jpg", sobelImg) ;
 	finalImg = productOfImage(finalImg, sobelImg) ;
-	cvSaveImage("f.jpg", finalImg) ;
+	cvSaveImage("example_f.jpg", finalImg) ;
 	finalImg = sumOfImage(finalImg, inputImg) ;
-	cvSaveImage("g.jpg", finalImg) ;
+	cvSaveImage("example_g.jpg", finalImg) ;
 	finalImg = powerLawTransformation(finalImg, 1.15) ;
-	cvSaveImage("h.jpg", finalImg) ;
+	cvSaveImage("example_h.jpg", finalImg) ;
+}
+
+void imgEnhanceCustomRoutine_1(string img){
+	IplImage *inputImg, *laplacianImg, *sobel, *result ;
+	inputImg = cvLoadImage(img.c_str(), CV_LOAD_IMAGE_GRAYSCALE) ;
+	laplacianImg = laplacianFilter(inputImg, 1) ;
+	cvSaveImage("custom_b.jpg", laplacianImg) ;
+	sobel = sobelFilter(inputImg) ;
+	cvSaveImage("custom_c.jpg", sobel) ;
+	sobel = avgFilter(sobel, 3) ;
+	result = sumOfImage(inputImg, laplacianImg) ;
+	cvSaveImage("custom_d.jpg", result) ;
+	result = avgFilter(result, 3) ;
+	cvSaveImage("custom_e.jpg", result) ;
+	result = sumOfImage(result, sobel) ;
+	result = avgFilter(result, 3) ;
+	cvSaveImage("custom_f.jpg", result) ;
+	result = powerLawTransformation(result, 1.05) ;
+	cvSaveImage("custom_g.jpg", result) ;
+	//cvShowImage("result", result) ;
+	//cvSaveImage("customResult.jpg", result) ;
 }
 
 int main(){
 	IplImage *inputImg, *eImg, *laplacianImg, *sobelImg, *finalImg ;
-	vector<int> h, eh ;
-	//imgEnhanceExampleRoutine("Fig0343(a)(skeleton_orig).tif") ;
-	inputImg = cvLoadImage("Fig0333(a)(test_pattern_blurring_orig).tif", CV_LOAD_IMAGE_GRAYSCALE) ;
-	finalImg = avgFilter(inputImg, 35) ;
-	cvNamedWindow("inputImage") ;
-	cvShowImage("inputImage", inputImg) ;
-	//cvNamedWindow("sobelImg") ;
-	//cvShowImage("sobelImg", sobelImg) ;
-	cvNamedWindow("finalImage") ;
-	cvShowImage("finalImage", finalImg) ;
-	//cvNamedWindow("inputHistogram") ;
-	//drawHistogram(h, "inputHistogram") ;
-	//cvNamedWindow("outputImage") ;
-	//cvShowImage("outputImage", eImg) ;
-	//cvNamedWindow("outputHistogram") ;
-	//drawHistogram(eh, "outputHistogram") ;
+	//imgHistogramRoutine("Fig0316(1)(top_left).tif") ;
+	imgEnhanceExampleRoutine("Fig0343(a)(skeleton_orig).tif") ;
+	imgEnhanceCustomRoutine_1("Fig0343(a)(skeleton_orig).tif") ;
 	cvWaitKey(0) ;
 	cvDestroyAllWindows() ;
 	return 0;

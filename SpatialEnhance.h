@@ -27,6 +27,8 @@ IplImage* powerLawTransformation(IplImage *img, double gamma, double c=1) ;
 IplImage* avgFilter(IplImage *img, int mask_size) ;
 
 //Median Filter smooth
+IplImage* medianFilter(IplImage *img, int mask_size) ;
+
 //Laplacian Filter sharpe
 IplImage* laplacianFilter(IplImage *img1, int type, bool rescale=false) ;
 
