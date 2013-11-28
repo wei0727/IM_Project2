@@ -10,7 +10,7 @@ vector<int> computeHistogram(IplImage *img){
 	return h ;
 }
 
-void drawHistogram(vector<int> &h, string window){
+void drawHistogram(vector<int> &h, string window, string save){
 	const int height = 300 ;
 	IplImage *img = cvCreateImage(cvSize(h.size()*2+10, height), IPL_DEPTH_8U, 1) ;
 	cvSetZero(img) ;
@@ -27,6 +27,8 @@ void drawHistogram(vector<int> &h, string window){
 		cvLine(img, p1, p2, lineColor, 2) ;
 	}
 	cvShowImage(window.c_str(), img) ;
+	if(!save.empty())
+		cvSaveImage(save.c_str(), img) ;
 }
 
 IplImage* histogramEqualization(IplImage *img, vector<int> &h){
@@ -59,6 +61,21 @@ IplImage* sumOfImage(IplImage *img1, IplImage *img2){
 		for(int j=0; j<img->width; j++){
 			CvScalar color ;
 			color.val[0] = cvGet2D(img1, i, j).val[0] + cvGet2D(img2, i, j).val[0] ;
+			cvSet2D(img, i, j, color) ;
+		}
+	}
+	return img ;
+}
+
+IplImage* difOfImage(IplImage *img1, IplImage *img2){
+	if(img1->width!=img2->width || img1->height!=img2->height)
+		return NULL ;
+	IplImage *img = cvCreateImage(cvSize(img1->width, img1->height), IPL_DEPTH_8U, 1) ;
+	cvSetZero(img) ;
+	for(int i=0; i<img->height; i++){
+		for(int j=0; j<img->width; j++){
+			CvScalar color ;
+			color.val[0] = abs(cvGet2D(img1, i, j).val[0] - cvGet2D(img2, i, j).val[0]) ;
 			cvSet2D(img, i, j, color) ;
 		}
 	}

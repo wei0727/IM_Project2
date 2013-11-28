@@ -9,13 +9,16 @@ using namespace cv;
 vector<int> computeHistogram(IplImage *img) ;
 
 //畫出Histogram h的統計圖
-void drawHistogram(vector<int> &h, string window) ;
+void drawHistogram(vector<int> &h, string window, string save="") ;
 
 //透過原圖以及Histogram進行equalization 回傳結果圖片
 IplImage* histogramEqualization(IplImage *img, vector<int> &h) ;
 
 //sum of two image
 IplImage* sumOfImage(IplImage *img1, IplImage *img2) ;
+
+//difference of two image
+IplImage* difOfImage(IplImage *img1, IplImage *img2) ;
 
 //product of two image
 IplImage* productOfImage(IplImage *img1, IplImage *img2) ;

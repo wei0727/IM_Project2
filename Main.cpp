@@ -16,9 +16,11 @@ void imgHistogramRoutine(string img){
 	outputImg = histogramEqualization(inputImg, inputH) ;
 	outputH = computeHistogram(outputImg) ;
 	cvShowImage("input", inputImg) ;
+	cvSaveImage("h_input.jpg", inputImg) ;
 	cvShowImage("output", outputImg) ;
-	drawHistogram(inputH, "inputHistogram") ;
-	drawHistogram(outputH, "outputHistogram") ;
+	cvSaveImage("h_output.jpg", outputImg) ;
+	drawHistogram(inputH, "inputHistogram", "h_input_histogram.jpg") ;
+	drawHistogram(outputH, "outputHistogram", "h_output_histogram.jpg") ;
 }
 
 void imgEnhanceExampleRoutine(string img){
@@ -44,28 +46,77 @@ void imgEnhanceCustomRoutine_1(string img){
 	IplImage *inputImg, *laplacianImg, *sobel, *result ;
 	inputImg = cvLoadImage(img.c_str(), CV_LOAD_IMAGE_GRAYSCALE) ;
 	laplacianImg = laplacianFilter(inputImg, 1) ;
-	cvSaveImage("custom_b.jpg", laplacianImg) ;
+	cvSaveImage("custom_1_b.jpg", laplacianImg) ;
 	sobel = sobelFilter(inputImg) ;
-	cvSaveImage("custom_c.jpg", sobel) ;
+	cvSaveImage("custom_1_c.jpg", sobel) ;
 	sobel = avgFilter(sobel, 3) ;
 	result = sumOfImage(inputImg, laplacianImg) ;
-	cvSaveImage("custom_d.jpg", result) ;
+	cvSaveImage("custom_1_d.jpg", result) ;
 	result = avgFilter(result, 3) ;
-	cvSaveImage("custom_e.jpg", result) ;
+	cvSaveImage("custom_1_e.jpg", result) ;
 	result = sumOfImage(result, sobel) ;
 	result = avgFilter(result, 3) ;
-	cvSaveImage("custom_f.jpg", result) ;
+	cvSaveImage("custom_1_f.jpg", result) ;
 	result = powerLawTransformation(result, 1.05) ;
-	cvSaveImage("custom_g.jpg", result) ;
+	cvSaveImage("custom_1_g.jpg", result) ;
 	//cvShowImage("result", result) ;
 	//cvSaveImage("customResult.jpg", result) ;
 }
 
+void imgEnhanceCustomRoutine_2(string img){
+	IplImage *inputImg, *result, *laplacian, *sobel ;
+	inputImg = cvLoadImage(img.c_str(), CV_LOAD_IMAGE_GRAYSCALE) ;
+	laplacian = laplacianFilter(inputImg, 1) ;
+	//laplacian = avgFilter(laplacian, 5) ;
+	cvSaveImage("custom_2_b.jpg", laplacian) ;
+	sobel = sobelFilter(inputImg) ;
+	cvSaveImage("custom_2_c.jpg", sobel) ;
+	sobel = medianFilter(sobel, 5) ;
+	//sobel = avgFilter(sobel, 5) ;
+	cvSaveImage("custom_2_d.jpg", sobel) ;
+	result = sumOfImage(inputImg, sobel) ;
+	cvSaveImage("custom_2_e.jpg", result) ;
+	result = sumOfImage(result, laplacian) ;
+	cvSaveImage("custom_2_f.jpg", result) ;
+	result = avgFilter(result, 5) ;
+	//result = powerLawTransformation(result, 1.1) ;
+	cvSaveImage("custom_2_g.jpg", result) ;
+	result = sumOfImage(result, laplacian) ;
+	cvSaveImage("custom_2_h.jpg", result) ;
+	//cvShowImage("result", result) ;
+}
+
 int main(){
-	IplImage *inputImg, *eImg, *laplacianImg, *sobelImg, *finalImg ;
-	//imgHistogramRoutine("Fig0316(1)(top_left).tif") ;
-	imgEnhanceExampleRoutine("Fig0343(a)(skeleton_orig).tif") ;
-	imgEnhanceCustomRoutine_1("Fig0343(a)(skeleton_orig).tif") ;
+	String img ;
+	int type ;
+	cout << "輸入要處理的圖片檔案名稱" << endl ;
+	cin >> img ;
+	cout << "選擇要進行的處理" << endl ;
+	cout << "1: Histogram equlization" << endl ;
+	cout << "2: Example Enhancement" << endl ;
+	cout << "3: Custom Enhancement_1" << endl ;
+	cout << "4: Custom_Enhancement_2" << endl ;
+	cin >> type ;
+	switch (type)
+	{
+	case 1:
+		imgHistogramRoutine(img) ;
+		break ;
+	case 2:
+		cout << "結果圖將儲存為 example_b~h.jpg" << endl ;
+		imgEnhanceExampleRoutine(img) ;
+		break ;
+	case 3:
+		cout << "結果圖將儲存為 custom_1_b~g.jpg" << endl ;
+		imgEnhanceCustomRoutine_1(img) ;
+		break ;
+	case 4:
+		cout << "結果圖將儲存為 custom_2_b~h.jpg" << endl ;
+		imgEnhanceCustomRoutine_2(img) ;
+		break ;
+	default:
+		break;
+	}
 	cvWaitKey(0) ;
 	cvDestroyAllWindows() ;
 	return 0;
