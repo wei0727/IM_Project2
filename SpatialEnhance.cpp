@@ -52,16 +52,43 @@ IplImage* histogramEqualization(IplImage *img, vector<int> &h){
 	return eImg ;
 }
 
-IplImage* sumOfImage(IplImage *img1, IplImage *img2){
+IplImage* sumOfImage(IplImage *img1, IplImage *img2, bool rescale){
 	if(img1->width!=img2->width || img1->height!=img2->height)
 		return NULL ;
 	IplImage *img = cvCreateImage(cvSize(img1->width, img1->height), IPL_DEPTH_8U, 1) ;
 	cvSetZero(img) ;
+	vector< vector<double> > tmp(img->height, vector<double>(img->width, 0)) ;
+	double min, max ;
 	for(int i=0; i<img->height; i++){
 		for(int j=0; j<img->width; j++){
 			CvScalar color ;
 			color.val[0] = cvGet2D(img1, i, j).val[0] + cvGet2D(img2, i, j).val[0] ;
-			cvSet2D(img, i, j, color) ;
+			//cvSet2D(img, i, j, color) ;
+			tmp[i][j] = color.val[0] ;
+			if(i==0 && j==0){
+				max = color.val[0] ;
+				min = color.val[0] ;
+			}
+			else{
+				max = color.val[0]>max? color.val[0]: max ;
+				min = color.val[0]<min? color.val[0]: min ;
+			}
+		}
+	}
+	if(rescale){
+		double range = max-min ;
+		for(int i=0; i<img->height; i++){
+			for(int j=0; j<img->width; j++){
+				double color = (tmp[i][j]-min)/range ;
+				cvSetReal2D(img, i, j, color*255) ;
+			}
+		}
+	}
+	else{
+		for(int i=0; i<img->height; i++){
+			for(int j=0; j<img->width; j++){
+				cvSet2D(img, i, j, cvScalar(tmp[i][j])) ;
+			}
 		}
 	}
 	return img ;
@@ -93,6 +120,11 @@ IplImage* productOfImage(IplImage *img1, IplImage *img2){
 			//double c2 = cvGetReal2D(img2, i, j) ;
 			double color = ((cvGetReal2D(img1, i, j)/255) * (cvGetReal2D(img2, i, j)/255))*255 ;
 			cvSetReal2D(img, i, j, color) ;
+		}
+	}
+	for(int i=0; i<img->height; i++){
+		for(int j=0; j<img->width; j++){
+			
 		}
 	}
 	return img ;
@@ -143,7 +175,8 @@ IplImage* applyMask(IplImage *img, Mat mask, bool rescale){
 			for(int j=0; j<img->width; j++){
 				double color = floor(tmp[i][j]+0.5) ;
 				if(color < 0)
-					color = 0;
+					//color = 0;
+					color = -color ;
 				else if(color > 255)
 					color = 255 ;
 				cvSet2D(dst, i, j, cvScalar(color)) ;
@@ -171,6 +204,27 @@ IplImage* sobelFilter(IplImage *img, bool rescale){
 	return sumOfImage(applyMask(img, mask_x, rescale), applyMask(img, mask_y, rescale)) ;
 }
 
+IplImage* sobelFilter_euclidean(IplImage *img, bool rescale){
+	Mat mask_x, mask_y ;
+	mask_x = (Mat_<int>(3, 3) << -1, -2, -1, 0, 0, 0, 1 ,2 ,1) ;
+	mask_y = (Mat_<int>(3, 3) << -1, 0, 1, -2, 0, 2, -1, 0, 1) ;
+	IplImage *img1, *img2, *dst ;
+	dst = cvCreateImage(cvSize(img->width, img->height), IPL_DEPTH_8U, 1) ;
+	cvSetZero(dst) ;
+	img1 = applyMask(img, mask_x, rescale) ;
+	img2 = applyMask(img, mask_y, rescale) ;
+	for(int i=0; i<img->height; i++){
+		for(int j=0; j<img->width; j++){
+			double color1 = cvGetReal2D(img1, i, j) ;
+			double color2 = cvGetReal2D(img2, i, j) ;
+			double color = sqrt(color1*color1 + color2*color2) ;
+			cvSetReal2D(dst, i, j, color) ;
+		}
+	}
+	return dst ;
+	//return sumOfImage(applyMask(img, mask_x, rescale), applyMask(img, mask_y, rescale)) ;
+}
+
 IplImage* avgFilter(IplImage *img, int mask_size){
 	if((mask_size%2!=1) || mask_size<3)
 		mask_size = 3 ;
@@ -178,13 +232,21 @@ IplImage* avgFilter(IplImage *img, int mask_size){
 	return applyMask(img, mask) ;
 }
 
-IplImage* powerLawTransformation(IplImage *img, double gamma, double c){
+IplImage* powerLawTransformation(IplImage *img, double gamma, double c, bool rescale){
 	IplImage *dst = cvCreateImage(cvSize(img->width, img->height), img->depth, img->nChannels) ;
 	cvSetZero(dst) ;
 	for(int i=0; i<img->height; i++){
 		for(int j=0; j<img->width; j++){
-			double color = c*pow(cvGetReal2D(img, i, j), gamma) ;
-			cvSetReal2D(dst, i, j, color) ;
+			if(rescale){
+				double color = cvGetReal2D(img, i, j)/255 ;
+				color = c*pow(color, gamma) ;
+				color *= 255 ;
+				cvSetReal2D(dst, i, j, color) ;
+			}
+			else{
+				double color = c*pow(cvGetReal2D(img, i, j), gamma) ;
+				cvSetReal2D(dst, i, j, color) ;
+			}
 		}
 	}
 	return dst ;

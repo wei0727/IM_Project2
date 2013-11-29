@@ -15,7 +15,7 @@ void drawHistogram(vector<int> &h, string window, string save="") ;
 IplImage* histogramEqualization(IplImage *img, vector<int> &h) ;
 
 //sum of two image
-IplImage* sumOfImage(IplImage *img1, IplImage *img2) ;
+IplImage* sumOfImage(IplImage *img1, IplImage *img2, bool rescale=false) ;
 
 //difference of two image
 IplImage* difOfImage(IplImage *img1, IplImage *img2) ;
@@ -24,7 +24,7 @@ IplImage* difOfImage(IplImage *img1, IplImage *img2) ;
 IplImage* productOfImage(IplImage *img1, IplImage *img2) ;
 
 //Power-Law transformation
-IplImage* powerLawTransformation(IplImage *img, double gamma, double c=1) ;
+IplImage* powerLawTransformation(IplImage *img, double gamma, double c=1, bool rescale=false) ;
 
 //Average Filter smoooth
 IplImage* avgFilter(IplImage *img, int mask_size) ;
@@ -37,6 +37,7 @@ IplImage* laplacianFilter(IplImage *img1, int type, bool rescale=false) ;
 
 //Sobel Filter sharpe
 IplImage* sobelFilter(IplImage *img, bool rescale=false) ;
+IplImage* sobelFilter_euclidean(IplImage *img, bool rescale=false) ;
 
 //compute image with mask
 IplImage* applyMask(IplImage *img, Mat mask, bool rescale=false) ;

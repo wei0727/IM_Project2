@@ -26,20 +26,22 @@ void imgHistogramRoutine(string img){
 void imgEnhanceExampleRoutine(string img){
 	IplImage *inputImg, *laplacianImg, *sobelImg, *finalImg ;
 	inputImg = cvLoadImage(img.c_str(), CV_LOAD_IMAGE_GRAYSCALE) ;
-	laplacianImg = laplacianFilter(inputImg, 1) ;
+	laplacianImg = laplacianFilter(inputImg, 1, true) ;
 	cvSaveImage("example_b.jpg", laplacianImg) ;
-	finalImg = sumOfImage(inputImg, laplacianImg) ;
+	finalImg = sumOfImage(inputImg, laplacianImg, true) ;
 	cvSaveImage("example_c.jpg", finalImg) ;
-	sobelImg = sobelFilter(inputImg) ;
+	//sobelImg = sobelFilter(inputImg) ;
+	sobelImg = sobelFilter_euclidean(inputImg) ;
 	cvSaveImage("example_d.jpg", sobelImg) ;
 	sobelImg = avgFilter(sobelImg, 5) ;
 	cvSaveImage("example_e.jpg", sobelImg) ;
 	finalImg = productOfImage(finalImg, sobelImg) ;
 	cvSaveImage("example_f.jpg", finalImg) ;
-	finalImg = sumOfImage(finalImg, inputImg) ;
+	finalImg = sumOfImage(finalImg, inputImg, true) ;
 	cvSaveImage("example_g.jpg", finalImg) ;
-	finalImg = powerLawTransformation(finalImg, 1.15) ;
+	finalImg = powerLawTransformation(finalImg, 0.5, 1, true) ;
 	cvSaveImage("example_h.jpg", finalImg) ;
+	cvShowImage("result", finalImg) ;
 }
 
 void imgEnhanceCustomRoutine_1(string img){
@@ -57,9 +59,10 @@ void imgEnhanceCustomRoutine_1(string img){
 	result = sumOfImage(result, sobel) ;
 	result = avgFilter(result, 3) ;
 	cvSaveImage("custom_1_f.jpg", result) ;
-	result = powerLawTransformation(result, 1.05) ;
+	result = powerLawTransformation(result, 1.1, 1, true) ;
+	//result = medianFilter(result, 3) ;
 	cvSaveImage("custom_1_g.jpg", result) ;
-	//cvShowImage("result", result) ;
+	cvShowImage("result", result) ;
 	//cvSaveImage("customResult.jpg", result) ;
 }
 
@@ -83,10 +86,20 @@ void imgEnhanceCustomRoutine_2(string img){
 	cvSaveImage("custom_2_g.jpg", result) ;
 	result = sumOfImage(result, laplacian) ;
 	cvSaveImage("custom_2_h.jpg", result) ;
-	//cvShowImage("result", result) ;
+	cvShowImage("result", result) ;
 }
 
 int main(){
+	//IplImage *img0 = cvLoadImage("Fig0343(a)(skeleton_orig).tif", CV_LOAD_IMAGE_GRAYSCALE) ;
+	//img0 = powerLawTransformation(img0, 0.5, 1, true) ;
+	//IplImage *sobel, *sobel_2 ;
+	//sobel = laplacianFilter(img0,1) ;
+	//sobel_2 = laplacianFilter(img0,1,true) ;
+	//img0 = difOfImage(sobel, sobel_2) ;
+	//cvShowImage("sobel", sobel) ;
+	//cvShowImage("soble_2", sobel_2) ;
+	//cvShowImage("dif", img0) ;
+	//cvWaitKey(0) ;
 	String img ;
 	int type ;
 	cout << "輸入要處理的圖片檔案名稱" << endl ;
