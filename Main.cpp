@@ -1,9 +1,6 @@
 #include <iostream>
-#include <cmath>
 #include <string>
 #include <sstream>
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
 #include "SpatialEnhance.h"
 using namespace std;
 using namespace cv;
@@ -30,7 +27,6 @@ void imgEnhanceExampleRoutine(string img){
 	cvSaveImage("example_b.jpg", laplacianImg) ;
 	finalImg = sumOfImage(inputImg, laplacianImg, true) ;
 	cvSaveImage("example_c.jpg", finalImg) ;
-	//sobelImg = sobelFilter(inputImg) ;
 	sobelImg = sobelFilter_euclidean(inputImg) ;
 	cvSaveImage("example_d.jpg", sobelImg) ;
 	sobelImg = avgFilter(sobelImg, 5) ;
@@ -47,12 +43,12 @@ void imgEnhanceExampleRoutine(string img){
 void imgEnhanceCustomRoutine_1(string img){
 	IplImage *inputImg, *laplacianImg, *sobel, *result ;
 	inputImg = cvLoadImage(img.c_str(), CV_LOAD_IMAGE_GRAYSCALE) ;
-	laplacianImg = laplacianFilter(inputImg, 1) ;
+	laplacianImg = laplacianFilter(inputImg, 1, true) ;
 	cvSaveImage("custom_1_b.jpg", laplacianImg) ;
 	sobel = sobelFilter(inputImg) ;
 	cvSaveImage("custom_1_c.jpg", sobel) ;
 	sobel = avgFilter(sobel, 3) ;
-	result = sumOfImage(inputImg, laplacianImg) ;
+	result = sumOfImage(inputImg, laplacianImg, true) ;
 	cvSaveImage("custom_1_d.jpg", result) ;
 	result = avgFilter(result, 3) ;
 	cvSaveImage("custom_1_e.jpg", result) ;
@@ -60,29 +56,24 @@ void imgEnhanceCustomRoutine_1(string img){
 	result = avgFilter(result, 3) ;
 	cvSaveImage("custom_1_f.jpg", result) ;
 	result = powerLawTransformation(result, 1.1, 1, true) ;
-	//result = medianFilter(result, 3) ;
 	cvSaveImage("custom_1_g.jpg", result) ;
 	cvShowImage("result", result) ;
-	//cvSaveImage("customResult.jpg", result) ;
 }
 
 void imgEnhanceCustomRoutine_2(string img){
 	IplImage *inputImg, *result, *laplacian, *sobel ;
 	inputImg = cvLoadImage(img.c_str(), CV_LOAD_IMAGE_GRAYSCALE) ;
 	laplacian = laplacianFilter(inputImg, 1) ;
-	//laplacian = avgFilter(laplacian, 5) ;
 	cvSaveImage("custom_2_b.jpg", laplacian) ;
 	sobel = sobelFilter(inputImg) ;
 	cvSaveImage("custom_2_c.jpg", sobel) ;
 	sobel = medianFilter(sobel, 5) ;
-	//sobel = avgFilter(sobel, 5) ;
 	cvSaveImage("custom_2_d.jpg", sobel) ;
 	result = sumOfImage(inputImg, sobel) ;
 	cvSaveImage("custom_2_e.jpg", result) ;
 	result = sumOfImage(result, laplacian) ;
 	cvSaveImage("custom_2_f.jpg", result) ;
 	result = avgFilter(result, 5) ;
-	//result = powerLawTransformation(result, 1.1) ;
 	cvSaveImage("custom_2_g.jpg", result) ;
 	result = sumOfImage(result, laplacian) ;
 	cvSaveImage("custom_2_h.jpg", result) ;
@@ -90,16 +81,6 @@ void imgEnhanceCustomRoutine_2(string img){
 }
 
 int main(){
-	//IplImage *img0 = cvLoadImage("Fig0343(a)(skeleton_orig).tif", CV_LOAD_IMAGE_GRAYSCALE) ;
-	//img0 = powerLawTransformation(img0, 0.5, 1, true) ;
-	//IplImage *sobel, *sobel_2 ;
-	//sobel = laplacianFilter(img0,1) ;
-	//sobel_2 = laplacianFilter(img0,1,true) ;
-	//img0 = difOfImage(sobel, sobel_2) ;
-	//cvShowImage("sobel", sobel) ;
-	//cvShowImage("soble_2", sobel_2) ;
-	//cvShowImage("dif", img0) ;
-	//cvWaitKey(0) ;
 	String img ;
 	int type ;
 	cout << "輸入要處理的圖片檔案名稱" << endl ;
@@ -113,6 +94,7 @@ int main(){
 	switch (type)
 	{
 	case 1:
+		cout << "結果圖將儲存為 h_input/output.jpg input/outputHistogram.jpg" << endl ;
 		imgHistogramRoutine(img) ;
 		break ;
 	case 2:
